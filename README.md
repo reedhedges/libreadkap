@@ -1,69 +1,68 @@
-## imgkap 1.16
-Tool to manipuate raster nautical charts in KAP format
+libreadkap
+==========
 
-[![Build Status](https://travis-ci.org/nohal/imgkap.svg?branch=master)](https://travis-ci.org/nohal/imgkap)
+Small GPL C++17 library to flexibly and efficiently read raster nautical chart data from BSB/KAP files.
 
-This repository is a Github clone of the original code created by M'dJ in 2011 and maintained by Pavel Kalian
+libreadkap is intended to be relatively easy to integrate as a file decoder module with
+other libraries and frameworks. A functional interface is provided allowing you to customize 
+how the KAP file data is read, or you can provide standard C++ istream or filename to read from.   
+After reading the KAP header, a callback function is called in which you can create or prepare
+the output (a `KAPData` struct reference is passed which provides image size and metadata read from KAP file
+header). then each row of KAP raster data is decoded and pixel data is written to an array 
+of bytes via a pointer you provide from another callback function (with no intermediary buffer).  
+These callback functions are std::function objects that can be bound to existing functions in 
+other libraries or frameworks, or be lambda functions that call into other libraries or frameworks 
+as desired.
 
-### Usage
-```
-imgkap [option] [inputfile] [lat0 lon0 [x0;y0] lat1 lon1 [x1;y1] | headerfile] [outputfile]
+A few basic utility functions for converting from geographic latitude/longitude to/from 
+WGS84 flat coordinate system are provided.
 
-Usage of imgkap Version 1.16 by M'dJ + H.N
+An example of reading files from a BSB zip file (using libzip) and creating PNG images (using 
+the FreeImage library) is provided.
 
-Convert kap to img :
-  >imgkap mykap.kap myimg.png
-    -convert mykap into myimg.png
-  >imgkap mykap.kap mheader.kap myimg.png
-    -convert mykap into header myheader (only text file) and myimg.png
+Multiple palette options (e.g. NGT, DSK, GRY, etc.) are not supported.
 
-Convert img to kap :
-  >imgkap myimg.png myheaderkap.kap
-    -convert myimg.png into myresult.kap using myheader.kap for kap informations
-  >imgkap mykap.png lat0 lon0 lat1 lon1 myresult.kap
-    -convert myimg.png into myresult.kap using WGS84 positioning
-  >imgkap mykap.png lat0 lon0 x0;y0 lat1 lon1 x1;y1 myresult.kap
-    -convert myimg.png into myresult.kap
-  >imgkap -s 'LOWEST LOW WATER' myimg.png lat0 lon0 lat1 lon2 -f
-    -convert myimg.png into myimg.kap using WGS84 positioning and options
+The maximum image size is 65535 pixels x 65535 pixels.
 
-Convert kml to kap :
-  >imgkap mykml.kml
-    -convert GroundOverlay mykml file into kap file using name and dir of image
-  >imgkap mykml.kml mykap.kap
-    -convert GroundOverlay mykml into mykap file
+Feature ideas to maybe add someday include: 
+  * Utilities to convert from lat/lon to point on chart image and vice-versa.
+  * Option to downsample/scale image while reading.
 
-WGS84 positioning :
-	lat0 lon0 is a left or right,top point
-	lat1 lon1 is a right or left,bottom point cater-cornered to lat0 lon0
-	lat to be between -85 and +85 degree
-	lon to be between -180 and +180 degree
-	    different formats are accepted : -1.22  1°10'20.123N  -1d22.123 ...
-	x;y pixel points can be used if lat lon defines not the image edges.
-	    lat0 lon0 x0;y0 must be in the left or right, upper third
-	    lat1 lon1 x1;y1 must be in the right or left, lower third
-Options :
-	-w  : no image size extension to WGS84 because image is already WGS84
-	-r x0f;y0f-x1f;y1f  "2 pixel points -> 4 * PLY"
-	    : define a rectangle area in the image visible from the .kap
-	-r x0f;y0f-x1f;y1f-x2f;y2f-x3f;y3f... "3 to 12 pixel points -> PLY"
-	    : define a up to 12 edges polygon visible from the .kap
-	-n  : Force compatibility all KAP software, max 127 colors
-	-c  : reduce colors of image to 127 colors / for test purposes only
-	-f  : fix units to FATHOMS
-	-e  : fix units to FEET
-	-s name : fix sounding datum
-	-t title : change name of map
-	-j projection : change projection of map (Default: MERCATOR)
-	-d datum : change geographic datum of map (Default: WGS84)
-	-l scale : Override the calculated scale, 1:<SCALE> (Default: automatically calculated from the image size and geographic extent)
-	-p color : color of map
-	   color (Kap to image) : ALL|RGB|DAY|DSK|NGT|NGR|GRY|PRC|PRG
-	     ALL generate multipage image, use only with GIF or TIF
-	   color (image or Kap to Kap) :  NONE|KAP|MAP|IMG
-	     NONE use colors in image file, default
-	     KAP only width KAP or header file, use RGB tag in KAP file
-	     MAP generate DSK and NGB colors for map scan
-	       < 64 colors: Black -> Gray, White -> Black
-	     IMG generate DSK and NGB colors for image (photo, satellite...)
-```
+Building
+--------
+
+You will need GNU Make and a C++ compiler supporting C++17.
+
+Run `make all` to build the library.
+
+The freeimage and libzip libraries are required to build the examples. To install on Ubuntu, run:
+````
+sudo apt install libfreeimage-dev libzip-dev
+````
+Run `make examples` to build the examples.
+
+Catch2 is required to build the unit and approval tests.
+Run `make tests` to build and run the tests.
+
+Bear is required to generate `compile_commands.json`, which is used to help configure IDEs, linters, etc.
+Install with `sudo apt install bear` and run `make compile_commands.json` to (re)-generate.
+
+License
+-------
+
+libreadkap was created by Reed Hedges based on imgkap by MdJ, H.N, 
+and Pavel Kalian (see <https://github.com/nohal/imgkap> or imgkap.c 
+for original imgkap code).
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
