@@ -1,0 +1,32 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "make", 
+			"script": "all",
+			"target": "all",
+			"fileName": "Makefile",
+			//"type": "shell",
+			//"command": "make",
+			"path": "",
+			"uri": {
+				"$mid": 1,
+				"fsPath": "/home/reed/projects/chartplotter/libreadkap/Makefile",
+				"external": "file:///home/reed/projects/chartplotter/libreadkap/Makefile",
+				"path": "/home/reed/projects/chartplotter/libreadkap/Makefile",
+				"scheme": "file"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"presentation": {
+				"reveal": "always"
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"label": "make: all"
+		}
+	]
+}
