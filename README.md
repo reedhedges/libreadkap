@@ -24,10 +24,6 @@ Multiple palette options (e.g. NGT, DSK, GRY, etc.) are not supported.
 
 The maximum image size is 65535 pixels x 65535 pixels.
 
-Feature ideas to maybe add someday include: 
-  * Utilities to convert from lat/lon to point on chart image and vice-versa.
-  * Option to downsample/scale image while reading.
-
 Building
 --------
 
@@ -47,6 +43,16 @@ Run `make tests` to build and run the tests.
 Bear is required to generate `compile_commands.json`, which is used to help configure IDEs, linters, etc.
 Install with `sudo apt install bear` and run `make compile_commands.json` to (re)-generate.
 
+To Do
+-----
+
+* Add unit and approval tests.
+* Support some pixel format conversions (e.g. to RGB formats frequently used in 
+  GUI frameworks.  Qt recommends xRGB (0xffRRGGBB) but also supports many others.)
+* Replace guts with code from libbsb instead of imgkap?
+* Utilities to convert from lat/lon to point on chart image and vice-versa.
+* Option to downsample/scale image while reading?
+  
 License
 -------
 
