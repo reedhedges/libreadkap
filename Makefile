@@ -1,10 +1,10 @@
 
 
 # Release: (Note disables assert()s.)
-CXXFLAGS:=-std=c++17 -DNDEBUG -O3 -Wall -Wextra -Wpedantic -Wsign-conversion -Wconversion
+#CXXFLAGS:=-std=c++17 -DNDEBUG -O3 -Wall -Wextra -Wpedantic -Wsign-conversion -Wconversion
 
 # Debug:
-#CXXFLAGS:=-std=c++17 -DDEBUG -g -Og -Wall -Wextra -Wpedantic -Wsign-conversion -Wconversion
+CXXFLAGS:=-std=c++17 -DDEBUG -g -Og -Wall -Wextra -Wpedantic -Wsign-conversion -Wconversion
 
 all: libreadkap.a
 
@@ -14,14 +14,20 @@ libreadkap.a: libreadkap.o
 libreadkap.o: libreadkap.cpp libreadkap.h
 	$(CXX) -c -o $@ $(CXXFLAGS) $<
 
-example: libreadkap.a
-	$(CXX) -o $@ $^ libreadkap.a -lfreeimage -lm
+example: example.cpp libreadkap.a
+	$(CXX) -o $@ $< libreadkap.a -lfreeimage -lm
 
 install: libreadkap.a
 	$(INSTALL) -m 644  libreadkap.a /usr/local/lib
 
 clean:
 	rm libreadkap.a libreadkap.o
+
+imgkap: imgkap.c
+	gcc imgkap.c -O3 -s -lm -lfreeimage -o imgkap
+
+imgkap.c: imgkap.c.rhmod
+	cp $< $@
 
 # (Re)-generate compile_commands.json which is used by tools like Intellisense (VS Code)
 # clang-tidy, other linters/analyzers.  Regenerate this if VS code won't get rid of some 
