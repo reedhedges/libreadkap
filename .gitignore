@@ -1,2 +1,7 @@
 libreadkap.a
 example
+clang_tidy
+compile_commands.json
+checks.json
+.vscode
+
